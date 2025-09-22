@@ -24,8 +24,11 @@ data_dir = '';
 data_dir_cav = '';
 
 % If using EPR file
-[field spec_raw] = eprload(data_dir);
-[fieldT1 specT1] = eprload(data_dir_cav);
+[field spec_raw params_spec] = eprload(data_dir);
+[fieldT1 specT1 params_tube] = eprload(data_dir_cav);
+
+freq_spec = str2num(params_spec.Spectrometer.uFreq(3:13)); % in MHz
+freq_tube = str2num(params_tube.Spectrometer.uFreq(3:13)); % in MHz
                                                                                                                                                                                                                                                   
 spec_final = spec_raw - specT1;
 
@@ -49,8 +52,8 @@ spec_n = spec(:,n);
 
 % Experimental Parameters
 Exp.Range = [min(field) max(field)]; % in mT
-Exp.Temperature = 193.15; % in K
-Exp.mwFreq = 9.15; % in GHz
+Exp.Temperature = value; % in K
+Exp.mwFreq = freq_spec/1000; % in GHz
 Exp.nPoints = length(field); % number of points (not obrigatory)
 
 % 2.1) g = 4.3
@@ -290,4 +293,5 @@ figure, plot(field,spec_n); hold on; plot(field,w1(n)*Fehs(:,n) + w2(n)*Cu(:,n) 
 
 %% Save all the simulation results
 save
+
 clc
